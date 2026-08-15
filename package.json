@@ -1,0 +1,23 @@
+{
+  "name": "cypress-automation",
+  "version": "1.0.0",
+  "description": "Практика автоматизации веб-приложений с использованием Cypress и JavaScript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/somovAleksandr/cypress-automation-tasks.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/somovAleksandr/cypress-automation-tasks/issues"
+  },
+  "homepage": "https://github.com/somovAleksandr/cypress-automation-tasks#readme",
+  "devDependencies": {
+    "cypress": "^15.20.1"
+  }
+}
