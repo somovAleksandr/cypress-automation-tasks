@@ -55,3 +55,90 @@ describe("Inline Form", () => {
     });
   });
 });
+
+describe("Basic form", () => {
+  beforeEach(() => {
+    cy.visit("/");
+
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+  });
+
+  it("Should display Basic Form elements", () => {
+    cy.contains("nb-card", "Basic form").within(() => {
+      cy.get("#exampleInputEmail1").as("emailInput");
+      cy.get("#exampleInputPassword1").as("passwordInput");
+      cy.contains("label", "Check me out")
+        .parent()
+        .find('input[type="checkbox"]')
+        .as("checkboxInput");
+      cy.contains("button", "Submit").as("submitBTN");
+
+      cy.get("nb-card-header").should("have.text", "Basic form");
+
+      cy.contains("label", "Email address").should("exist");
+      cy.contains("label", "Password").should("exist");
+
+      cy.get("@emailInput").should("have.attr", "placeholder", "Email");
+      cy.get("@passwordInput").should("have.attr", "placeholder", "Password");
+
+      cy.get("@emailInput").should("have.value", "");
+      cy.get("@passwordInput").should("have.value", "");
+
+      cy.get("@checkboxInput").should("be.enabled").and("not.be.checked");
+
+      cy.get("@submitBTN")
+        .should("be.enabled")
+        .and("be.visible")
+        .and("have.text", "Submit");
+    });
+  });
+
+  it("Should allow user to fill Basic Form", () => {
+    cy.contains("nb-card", "Basic form").within(() => {
+      cy.get("#exampleInputEmail1").as("emailInput");
+      cy.get("#exampleInputPassword1").as("passwordInput");
+      cy.contains("label", "Check me out")
+        .parent()
+        .find('input[type="checkbox"]')
+        .as("checkboxInput");
+      cy.contains("button", "Submit").as("submitBTN");
+
+      cy.get("@emailInput")
+        .clear()
+        .type("test@mail.com")
+        .should("have.value", "test@mail.com");
+
+      cy.get("@passwordInput")
+        .clear()
+        .type("123456789")
+        .should("have.value", "123456789");
+
+      cy.get("@checkboxInput").check({ force: true }).should("be.checked");
+    });
+  });
+
+  it("Should submit Basic Form", () => {
+    cy.contains("nb-card", "Basic form").within(() => {
+      cy.get("#exampleInputEmail1").as("emailInput");
+      cy.get("#exampleInputPassword1").as("passwordInput");
+      cy.contains("label", "Check me out")
+        .parent()
+        .find('input[type="checkbox"]')
+        .as("checkboxInput");
+      cy.contains("button", "Submit").as("submitBTN");
+
+      cy.get("@emailInput").clear().type("test@mail.com");
+      cy.get("@passwordInput").clear().type("123456789");
+
+      cy.get("@checkboxInput").check({ force: true });
+
+      cy.get("@submitBTN").click();
+
+      cy.get("@emailInput").should("have.value", "test@mail.com");
+      cy.get("@passwordInput").should("have.value", "123456789");
+
+      cy.get("@checkboxInput").should("be.enabled").and("be.checked");
+    });
+  });
+});
