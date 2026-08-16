@@ -142,3 +142,127 @@ describe("Basic form", () => {
     });
   });
 });
+
+describe("Using the Grid Form", () => {
+  beforeEach(() => {
+    cy.visit("/");
+
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+  });
+
+  it("Should display Using the Grid elements", () => {
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      cy.get("nb-card-header").should("have.text", "Using the Grid");
+
+      cy.contains("label", "Email").should("exist");
+      cy.contains("label", "Password").should("exist");
+      cy.contains("label", "Radios").should("exist");
+
+      cy.get('[data-cy="inputEmail1"]').should(
+        "have.attr",
+        "placeholder",
+        "Email",
+      );
+      cy.get("#inputPassword2").should("have.attr", "placeholder", "Password");
+
+      cy.get('[data-cy="inputEmail1"]').should("have.value", "");
+      cy.get("#inputPassword2").should("have.value", "");
+
+      cy.contains("Radios")
+        .parent()
+        .find('input[type="radio"]')
+        .then(($radios) => {
+          expect($radios).to.have.length(3);
+          expect($radios.filter(":disabled")).to.have.length(1);
+          expect($radios.not(":disabled")).to.have.length(2);
+        });
+
+      cy.contains("Option 1")
+        .parent()
+        .find('input[type="radio"]')
+        .should("be.enabled")
+        .and("not.be.checked");
+
+      cy.contains("Option 2")
+        .parent()
+        .find('input[type="radio"]')
+        .should("be.enabled")
+        .and("not.be.checked");
+
+      cy.contains("Disabled Option")
+        .parent()
+        .find('input[type="radio"]')
+        .should("be.disabled")
+        .and("be.checked");
+
+      cy.contains("button", "Sign in")
+        .should("be.enabled")
+        .and("be.visible")
+        .and("have.text", "Sign in");
+    });
+  });
+
+  it("Should allow user to fill Using the Grid", () => {
+    cy.get('[data-cy="inputEmail1"]')
+      .type("testemail@gmail.com")
+      .should("have.value", "testemail@gmail.com");
+
+    cy.press(Cypress.Keyboard.Keys.TAB);
+
+    cy.get("#inputPassword2").should("be.focused");
+
+    cy.get("#inputPassword2")
+      .type("123456789")
+      .should("have.value", "123456789");
+
+    cy.contains("Option 2")
+      .parent()
+      .find('input[type="radio"]')
+      .check({ force: true })
+      .should("be.checked");
+
+    cy.contains("Option 1")
+      .parent()
+      .find('input[type="radio"]')
+      .should("be.enabled")
+      .and("not.be.checked");
+
+    cy.contains("Disabled Option")
+      .parent()
+      .find('input[type="radio"]')
+      .should("be.disabled")
+      .and("not.be.checked");
+  });
+
+  it("Should submit Using the Grid", () => {
+    cy.get('[data-cy="inputEmail1"]')
+      .clear()
+      .type("zxcasdqwe@asd.com")
+      .should("have.value", "zxcasdqwe@asd.com");
+
+    cy.press(Cypress.Keyboard.Keys.TAB);
+
+    cy.get("#inputPassword2").should("be.focused");
+
+    cy.get("#inputPassword2")
+      .clear()
+      .type("12356789")
+      .should("have.value", "12356789");
+
+    cy.contains("Option 2")
+      .parent()
+      .find('input[type="radio"]')
+      .check({ force: true })
+      .should("be.checked");
+
+    cy.contains("button", "Sign in").click();
+
+    cy.get('[data-cy="inputEmail1"]').should("have.value", "zxcasdqwe@asd.com");
+    cy.get("#inputPassword2").should("have.value", "12356789");
+    cy.contains("Option 2")
+      .parent()
+      .find('input[type="radio"]')
+      .should("be.checked");
+  });
+});
