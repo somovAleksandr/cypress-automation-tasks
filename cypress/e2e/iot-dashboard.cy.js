@@ -403,3 +403,75 @@ describe("Form without Labels", () => {
     );
   });
 });
+
+describe("Horizontal Form", () => {
+  beforeEach(() => {
+    cy.visit("/");
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+  });
+
+  it("Should display Horizontal Form elements", () => {
+    cy.contains("nb-card", "Horizontal form").within(() => {
+      cy.get("nb-card-header").should("have.text", "Horizontal form");
+
+      cy.contains("label", "Email").should("have.text", "Email");
+      cy.contains("label", "Password").should("have.text", "Password");
+      cy.contains("label", "Remember me").should("have.text", "Remember me");
+
+      cy.get("#inputEmail3").should("have.attr", "placeholder", "Email");
+      cy.get("#inputPassword3").should("have.attr", "placeholder", "Password");
+
+      cy.get("#inputEmail3").should("have.value", "");
+      cy.get("#inputPassword3").should("have.value", "");
+
+      cy.contains("Remember me")
+        .parent()
+        .find('input[type="checkbox"]')
+        .should("be.enabled")
+        .and("not.be.checked");
+
+      cy.contains("button", "Sign in")
+        .scrollIntoView()
+        .should("be.visible")
+        .and("be.enabled")
+        .and("have.text", "Sign in");
+    });
+  });
+
+  it("Should allow user to fill Horizontal form", () => {
+    cy.contains("nb-card", "Horizontal form").within(() => {
+      cy.get("#inputEmail3")
+        .clear()
+        .type("test@mail.com")
+        .should("have.value", "test@mail.com");
+
+      cy.get("#inputPassword3")
+        .clear()
+        .type("123456789@@")
+        .should("have.value", "123456789@@");
+
+      cy.contains("Remember me")
+        .closest("nb-checkbox")
+        .find('input[type="checkbox"]')
+        .check({ force: true })
+        .should("be.checked");
+    });
+  });
+
+  it("Should submit Horizontal Form", () => {
+    cy.contains("nb-card", "Horizontal form").within(() => {
+      cy.get("#inputEmail3").type("test@gmail.com");
+      cy.get("#inputPassword3").type("123456789aaaa");
+
+      cy.contains("Remember me")
+        .closest("nb-checkbox")
+        .find('input[type="checkbox"]')
+        .check({ force: true });
+
+      cy.contains("button", "Sign in").should("be.enabled").click();
+    });
+
+    cy.contains("Horizontal form").should("be.visible");
+  });
+});
