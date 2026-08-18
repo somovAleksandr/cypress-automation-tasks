@@ -39,3 +39,15 @@ Cypress.Commands.add("selectCHECKBOX", (selector) => {
     .check({ force: true })
     .should("be.checked");
 });
+
+Cypress.Commands.add("checkCheckboxState", (labelText, shouldBeChecked) => {
+  cy.root()
+    .contains(labelText)
+    .closest("nb-checkbox")
+    .find('input[type="checkbox"]')
+    .should(shouldBeChecked ? "be.checked" : "not.be.checked");
+});
+
+Cypress.Commands.add("getInputByLabel", (label) => {
+  cy.root().contains(label).closest(".form-group").find("input");
+});
