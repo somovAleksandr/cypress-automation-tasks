@@ -51,3 +51,7 @@ Cypress.Commands.add("checkCheckboxState", (labelText, shouldBeChecked) => {
 Cypress.Commands.add("getInputByLabel", (label) => {
   cy.root().contains(label).closest(".form-group").find("input");
 });
+
+Cypress.Commands.add("checkEmptyInput", (selector) => {
+  cy.root().find(`input[placeholder="${selector}"]`).and("have.value", "");
+});
