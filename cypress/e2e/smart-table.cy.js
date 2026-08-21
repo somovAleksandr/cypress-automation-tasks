@@ -4,6 +4,15 @@ function verifyInput(selector) {
   cy.get(`input[placeholder="${selector}"]`).should("have.value", "");
 }
 
+function fillInput(selector, currentValue) {
+  cy.get("thead tr")
+    .eq(2)
+    .find(`input[placeholder="${selector}"]`)
+    .clear()
+    .type(currentValue)
+    .should("have.value", currentValue);
+}
+
 describe("Smart-table", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -85,6 +94,42 @@ describe("Smart-table", () => {
           cy.wrap($el).should("have.class", "disabled");
         } else {
           cy.wrap($el).should("not.be.visible");
+        }
+      });
+  });
+
+  it.only("Should allow user to add and delete a row", () => {
+    cy.get("thead tr").eq(1).find("th.ng2-smart-actions-title-add").click();
+
+    const inputPlaceholders = [
+      "ID",
+      "First Name",
+      "Last Name",
+      "Username",
+      "E-mail",
+      "Age",
+    ];
+
+    const currentValues = [
+      999,
+      "John",
+      "Doe",
+      "John777",
+      "test@gmail.com",
+      "25",
+    ];
+
+    for (let i = 0; i < inputPlaceholders.length; i++) {
+      fillInput(inputPlaceholders[i], currentValues[i]);
+    }
+
+    cy.get("thead").find(".ng2-smart-action-add-create").click();
+
+    cy.get("tbody tr")
+      .first()
+      .within(() => {
+        for (let i = 0; i < inputPlaceholders.length; i++) {
+          cy.contains("td", currentValues[i]).should("exist");
         }
       });
   });
