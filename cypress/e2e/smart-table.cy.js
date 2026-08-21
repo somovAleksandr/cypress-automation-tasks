@@ -1,5 +1,9 @@
 /// <reference types="cypress" />
 
+function verifyInput(selector) {
+  cy.get(`input[placeholder="${selector}"]`).should("have.value", "");
+}
+
 describe("Smart-table", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -47,11 +51,12 @@ describe("Smart-table", () => {
 
     cy.get("th.ng2-smart-actions-title-add").should("be.visible");
 
-    for (const elem of theadLabels) {
-      if (elem !== "Actions") {
-        cy.checkEmptyInput(elem.trim());
-      }
-    }
+    verifyInput("ID");
+    verifyInput("First Name");
+    verifyInput("Last Name");
+    verifyInput("Username");
+    verifyInput("E-mail");
+    verifyInput("Age");
 
     cy.get("tbody tr")
       .first()
@@ -60,6 +65,27 @@ describe("Smart-table", () => {
         cy.get(".ng2-smart-action-delete-delete")
           .should("exist")
           .and("be.visible");
+      });
+
+    cy.get("ng2-smart-table-pager")
+      .find("ul li")
+      .eq(0)
+      .should("have.class", "disabled");
+    cy.get("ng2-smart-table-pager")
+      .find("ul li")
+      .eq(1)
+      .should("have.class", "disabled");
+
+    const disabledIndexes = [0, 1];
+
+    cy.get("ng2-smart-table-pager")
+      .find("nav li")
+      .each(($el, index) => {
+        if (disabledIndexes.includes(index)) {
+          cy.wrap($el).should("have.class", "disabled");
+        } else {
+          cy.wrap($el).should("not.be.visible");
+        }
       });
   });
 });
