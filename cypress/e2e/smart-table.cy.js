@@ -98,7 +98,7 @@ describe("Smart-table", () => {
       });
   });
 
-  it.only("Should allow user to add and delete a row", () => {
+  it("Should allow user to add and delete a row", () => {
     cy.get("thead tr").eq(1).find("th.ng2-smart-actions-title-add").click();
 
     const inputPlaceholders = [
@@ -132,5 +132,15 @@ describe("Smart-table", () => {
           cy.contains("td", currentValues[i]).should("exist");
         }
       });
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("999").closest("tr").find(".nb-trash").click();
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", "999").should("not.exist");
   });
 });
