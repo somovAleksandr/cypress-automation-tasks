@@ -143,4 +143,52 @@ describe("Smart-table", () => {
 
     cy.contains("tbody tr", "999").should("not.exist");
   });
+
+  it("Should allow user to navigate between pages", () => {
+    cy.get("nav ul").within(() => {
+      cy.contains("a", "2").click();
+
+      cy.contains("li", "2").should("have.class", "active");
+
+      cy.contains("li", "1").should("not.have.class", "active");
+
+      cy.get('[aria-label="First"]')
+        .closest("li")
+        .should("exist")
+        .and("not.be.disabled");
+
+      cy.get('[aria-label="Prev"]')
+        .closest("li")
+        .should("exist")
+        .and("not.be.disabled");
+
+      cy.get('[aria-label="Prev"]').click();
+
+      cy.get('[aria-label="First"]')
+        .closest("li")
+        .should("exist")
+        .and("have.class", "disabled");
+
+      cy.get('[aria-label="Prev"]')
+        .closest("li")
+        .should("exist")
+        .and("have.class", "disabled");
+
+      cy.get('[aria-label="Next"]').click();
+
+      cy.contains("li", "2").should("have.class", "active");
+
+      cy.contains("li", "1").should("not.have.class", "active");
+
+      cy.get('[aria-label="Last"]').click();
+
+      cy.get('[aria-label="Next"]')
+        .closest("li")
+        .should("have.class", "disabled");
+
+      cy.get('[aria-label="Last"]')
+        .closest("li")
+        .should("have.class", "disabled");
+    });
+  });
 });
