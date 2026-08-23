@@ -53,7 +53,7 @@ describe("Daily Cypress Exam #01", () => {
     });
   });
 
-  it("Should allow user to fill form", () => {
+  it("Should allow user to fill and submit form", () => {
     cy.contains("Forms").click();
     cy.contains("Form Layouts").click();
 
@@ -84,11 +84,153 @@ describe("Daily Cypress Exam #01", () => {
       cy.get("#inputPassword2").should("have.value", "123456789aBc");
     });
   });
+
+  it.only("Should verify Toast types", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Toastr").click();
+
+    cy.contains("Toast type:")
+      .closest(".form-group")
+      .find("select option")
+      .each(($el, index, $list) => {
+        const optionText = $el.text().trim();
+        const optionValue = $el.val().trim();
+
+        cy.wrap($el).should("have.value", optionValue);
+
+        cy.contains("Toast type:")
+          .closest(".form-group")
+          .find("select")
+          .select(optionText);
+      });
+  });
 });
 
-// заполнение Email;
-// Tab → Password должен получить focus;
-// заполнение Password;
-// выбор Option 2;
-// Submit;
-// после Submit значения сохранились.
+// Часть C — Custom Dropdown
+
+// Там же:
+
+// Position
+
+// Проверь все варианты Position.
+
+// Используй цикл.
+
+// Для каждого:
+
+// открыть dropdown
+// → выбрать option
+// → проверить выбранное значение
+// Часть D — Tooltips
+
+// Tooltip → Tooltip Placements
+
+// Проверь:
+
+// TOP
+// RIGHT
+// BOTTOM
+// LEFT
+
+// Для каждого:
+
+// mouseenter
+// → tooltip существует
+// → правильный текст
+// → mouseleave
+// Часть E — Browser Dialog
+
+// Tables & Data → Smart Table
+
+// Удаление первой строки.
+
+// Используй cy.on("window:confirm").
+
+// Проверь:
+
+// confirm действительно появляется;
+// текст равен:
+// Are you sure you want to delete?
+// после подтверждения первая строка исчезла / данные сдвинулись.
+// Часть F — Stub
+
+// Сделай отдельный it.
+
+// Тот же Delete, но теперь через:
+
+// cy.window()
+// → stub(win, "confirm")
+// → returns(true)
+
+// Проверь, что:
+
+// confirm был вызван
+
+// И потом второй вариант:
+
+// returns(false)
+
+// И проверь, что запись не удалилась.
+
+// Часть G — Tables 🔥
+
+// На Smart Table найди:
+
+// Larry Bird
+
+// Не используй индекс строки.
+
+// Алгоритм:
+
+// найти строку по уникальному тексту
+// → Edit
+// → изменить возраст на 35
+// → Confirm
+// → проверить результат
+
+// Причём проверку возраста сделай через последнюю ячейку, как в сегодняшнем уроке.
+
+// Часть H — Tables + index
+
+// Добавь новую запись:
+
+// John
+// Smith
+
+// Затем найди новую строку через индекс, а не через contains("John").
+
+// Проверь:
+
+// First Name = John
+// Last Name = Smith
+// 🚨 Главное правило экзамена
+
+// Не пиши всё одним огромным it.
+
+// Разбей на несколько:
+
+// describe("Daily Cypress Exam #01", () => {
+
+//   it("Should verify Using the Grid", () => {
+//   });
+
+//   it("Should verify Toast types", () => {
+//   });
+
+//   it("Should verify Position dropdown", () => {
+//   });
+
+//   it("Should verify Tooltip placements", () => {
+//   });
+
+//   it("Should verify browser confirm with cy.on()", () => {
+//   });
+
+//   it("Should verify browser confirm with stub", () => {
+//   });
+
+//   it("Should edit Larry Bird in Smart Table", () => {
+//   });
+
+//   it("Should add John Smith to Smart Table", () => {
+//   });
