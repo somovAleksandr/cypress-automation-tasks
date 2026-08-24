@@ -85,7 +85,7 @@ describe("Daily Cypress Exam #01", () => {
     });
   });
 
-  it.only("Should verify Toast types", () => {
+  it("Should verify Toast types", () => {
     cy.contains("Modal & Overlays").click();
     cy.contains("Toastr").click();
 
@@ -104,133 +104,69 @@ describe("Daily Cypress Exam #01", () => {
           .select(optionText);
       });
   });
+
+  it("Should verify Position dropdown", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Toastr").click();
+
+    cy.contains("Position:")
+      .closest(".form-group")
+      .find("button")
+      .as("dropdownBTN");
+
+    cy.get("@dropdownBTN").click();
+
+    cy.get("nb-option").each(($el, index, $list) => {
+      const optionText = $el.text().trim();
+
+      cy.wrap($el).click();
+
+      cy.get("@dropdownBTN").should("have.text", optionText);
+
+      if (index < $list.length - 1) {
+        cy.get("@dropdownBTN").click();
+      }
+    });
+  });
+
+  it("Should verify Tooltip placements", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Tooltip").click();
+
+    cy.contains("nb-card", "Tooltip Placements").within(() => {
+      cy.get("button").each(($el, index, $list) => {
+        cy.wrap($el).trigger("mouseenter", { force: true });
+
+        cy.document()
+          .find("nb-tooltip")
+          .should("have.text", "This is a tooltip");
+
+        cy.wrap($el).trigger("mouseleave", { force: true });
+      });
+    });
+  });
+
+  it("Should verify browser confirm with cy.on()", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.on("window:confirm", (str) => {
+      expect(str).to.equal("Are you sure you want to delete?");
+    });
+
+    cy.get("tbody tr").first().find(".ng2-smart-action-delete-delete").click();
+  });
+
+  it("Should verify browser confirm with stub", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.get("tbody tr").eq(0).find(".ng2-smart-action-delete-delete").click();
+
+    cy.get("@dialog").should("be.called");
+  });
 });
-
-// Часть C — Custom Dropdown
-
-// Там же:
-
-// Position
-
-// Проверь все варианты Position.
-
-// Используй цикл.
-
-// Для каждого:
-
-// открыть dropdown
-// → выбрать option
-// → проверить выбранное значение
-// Часть D — Tooltips
-
-// Tooltip → Tooltip Placements
-
-// Проверь:
-
-// TOP
-// RIGHT
-// BOTTOM
-// LEFT
-
-// Для каждого:
-
-// mouseenter
-// → tooltip существует
-// → правильный текст
-// → mouseleave
-// Часть E — Browser Dialog
-
-// Tables & Data → Smart Table
-
-// Удаление первой строки.
-
-// Используй cy.on("window:confirm").
-
-// Проверь:
-
-// confirm действительно появляется;
-// текст равен:
-// Are you sure you want to delete?
-// после подтверждения первая строка исчезла / данные сдвинулись.
-// Часть F — Stub
-
-// Сделай отдельный it.
-
-// Тот же Delete, но теперь через:
-
-// cy.window()
-// → stub(win, "confirm")
-// → returns(true)
-
-// Проверь, что:
-
-// confirm был вызван
-
-// И потом второй вариант:
-
-// returns(false)
-
-// И проверь, что запись не удалилась.
-
-// Часть G — Tables 🔥
-
-// На Smart Table найди:
-
-// Larry Bird
-
-// Не используй индекс строки.
-
-// Алгоритм:
-
-// найти строку по уникальному тексту
-// → Edit
-// → изменить возраст на 35
-// → Confirm
-// → проверить результат
-
-// Причём проверку возраста сделай через последнюю ячейку, как в сегодняшнем уроке.
-
-// Часть H — Tables + index
-
-// Добавь новую запись:
-
-// John
-// Smith
-
-// Затем найди новую строку через индекс, а не через contains("John").
-
-// Проверь:
-
-// First Name = John
-// Last Name = Smith
-// 🚨 Главное правило экзамена
-
-// Не пиши всё одним огромным it.
-
-// Разбей на несколько:
-
-// describe("Daily Cypress Exam #01", () => {
-
-//   it("Should verify Using the Grid", () => {
-//   });
-
-//   it("Should verify Toast types", () => {
-//   });
-
-//   it("Should verify Position dropdown", () => {
-//   });
-
-//   it("Should verify Tooltip placements", () => {
-//   });
-
-//   it("Should verify browser confirm with cy.on()", () => {
-//   });
-
-//   it("Should verify browser confirm with stub", () => {
-//   });
-
-//   it("Should edit Larry Bird in Smart Table", () => {
-//   });
-
-//   it("Should add John Smith to Smart Table", () => {
-//   });
