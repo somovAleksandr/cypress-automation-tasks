@@ -169,4 +169,45 @@ describe("Daily Cypress Exam #01", () => {
 
     cy.get("@dialog").should("be.called");
   });
+
+  it("Should edit Larry Bird in Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.get("tbody")
+      .contains("tr", "Larry")
+      .then((tableRow) => {
+        cy.wrap(tableRow).find(".ng2-smart-action-edit-edit").click();
+
+        cy.wrap(tableRow).find('input[placeholder="Age"]').clear().type("35");
+
+        cy.wrap(tableRow).find(".nb-checkmark").click();
+
+        cy.wrap(tableRow).find("td").last().should("have.text", 35);
+      });
+  });
+
+  it("Should add John Smith to Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.get("thead").find(".ng2-smart-actions-title-add").click();
+
+    cy.get("thead")
+      .find("tr")
+      .last()
+      .then((tableRow) => {
+        cy.wrap(tableRow).find('input[placeholder="First Name"]').type("John");
+        cy.wrap(tableRow).find('input[placeholder="Last Name"]').type("Smith");
+
+        cy.wrap(tableRow).find(".nb-checkmark").click();
+      });
+
+    cy.get("tbody")
+      .contains("tr", "John")
+      .then((tableRow) => {
+        cy.wrap(tableRow).contains("td", "John").should("exist");
+        cy.wrap(tableRow).contains("td", "Smith").should("exist");
+      });
+  });
 });
