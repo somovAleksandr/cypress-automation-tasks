@@ -203,11 +203,12 @@ describe("Daily Cypress Exam #01", () => {
         cy.wrap(tableRow).find(".nb-checkmark").click();
       });
 
-    cy.get("tbody")
-      .contains("tr", "John")
-      .then((tableRow) => {
-        cy.wrap(tableRow).contains("td", "John").should("exist");
-        cy.wrap(tableRow).contains("td", "Smith").should("exist");
+    cy.get("tbody tr")
+      .first()
+      .find("td")
+      .then((tableColumn) => {
+        cy.wrap(tableColumn).eq(2).should("have.text", "John");
+        cy.wrap(tableColumn).eq(3).should("have.text", "Smith");
       });
   });
 });
