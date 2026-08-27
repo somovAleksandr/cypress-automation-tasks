@@ -124,4 +124,23 @@ describe("Daily practice routine", () => {
         cy.get("td").last().should("have.text", "35");
       });
   });
+
+  it.only("Task #5", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.get("tbody")
+      .contains("tr", "Ruben")
+      .then((tableRow) => {
+        cy.wrap(tableRow).find(".nb-trash").click();
+
+        cy.get("@dialog").should("be.called");
+      });
+
+    cy.get("tbody").contains("tr", "Ruben").should("not.exist");
+  });
 });
