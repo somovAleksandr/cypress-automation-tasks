@@ -43,4 +43,28 @@ describe("Daily practice routine", () => {
       cy.wrap($row).find("td").should("have.length", tableHeadersText.length);
     });
   });
+
+  it.only("Task #2", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = [
+      "3",
+      "Larry",
+      "Bird",
+      "@twitter",
+      "twitter@outlook.com",
+      "18",
+    ];
+
+    cy.get("tbody")
+      .contains("tr", "Larry")
+      .within(() => {
+        cy.get("td").each(($td, index) => {
+          if (index > 0) {
+            cy.wrap($td).should("have.text", userData[index - 1]);
+          }
+        });
+      });
+  });
 });
