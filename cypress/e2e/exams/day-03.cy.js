@@ -98,21 +98,30 @@ describe("Daily practice routine", () => {
         });
       });
   });
+
+  it("Task #4", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.get("tbody")
+      .contains("tr", "Larry")
+      .then((tableRow) => {
+        cy.wrap(tableRow).find(".nb-edit").click();
+
+        cy.wrap(tableRow)
+          .find("td")
+          .last()
+          .find('[placeholder="Age"]')
+          .clear()
+          .type("35");
+
+        cy.wrap(tableRow).find(".nb-checkmark").click();
+      });
+
+    cy.get("tbody")
+      .contains("tr", "Larry")
+      .within(() => {
+        cy.get("td").last().should("have.text", "35");
+      });
+  });
 });
-// найти строку по john@test.com
-// ↓
-// внутри неё проверить
-// John
-// Test
-// @johnqa
-// john@test.com
-// 25
-// Дополнительно
-
-// Проверь, что количество строк после создания стало:
-
-// старое количество + 1
-
-// Вот это уже 🔥.
-
-// Тебе потребуется сохранить изначальное количество строк.
