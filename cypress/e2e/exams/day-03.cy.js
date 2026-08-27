@@ -44,7 +44,7 @@ describe("Daily practice routine", () => {
     });
   });
 
-  it.only("Task #2", () => {
+  it("Task #2", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -67,4 +67,52 @@ describe("Daily practice routine", () => {
         });
       });
   });
+
+  it("Task #3", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = ["John", "Test", "@johnqa", "john@test.com", "25"];
+
+    cy.get(".nb-plus").click();
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        cy.get('input[placeholder="First Name"]').type(userData[0]);
+        cy.get('input[placeholder="Last Name"]').type(userData[1]);
+        cy.get('input[placeholder="Username"]').type(userData[2]);
+        cy.get('input[placeholder="E-mail"]').type(userData[3]);
+        cy.get('input[placeholder="Age"]').type(userData[4]);
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.get("tbody")
+      .contains("tr", "john@test.com")
+      .within(() => {
+        cy.get("td").each(($td, index) => {
+          if (index > 1) {
+            cy.wrap($td).should("have.text", userData[index - 2]);
+          }
+        });
+      });
+  });
 });
+// найти строку по john@test.com
+// ↓
+// внутри неё проверить
+// John
+// Test
+// @johnqa
+// john@test.com
+// 25
+// Дополнительно
+
+// Проверь, что количество строк после создания стало:
+
+// старое количество + 1
+
+// Вот это уже 🔥.
+
+// Тебе потребуется сохранить изначальное количество строк.
