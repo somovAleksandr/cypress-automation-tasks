@@ -125,7 +125,7 @@ describe("Daily practice routine", () => {
       });
   });
 
-  it.only("Task #5", () => {
+  it("Task #5", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -142,5 +142,25 @@ describe("Daily practice routine", () => {
       });
 
     cy.get("tbody").contains("tr", "Ruben").should("not.exist");
+  });
+
+  it("Task #6 Should filter table by age", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const ages = ["20", "30", "40", "200"];
+
+    cy.wrap(ages).each((age) => {
+      cy.get('input[placeholder="Age"]').clear().type(age);
+      cy.wait(500);
+
+      cy.get("tbody tr").each(($row) => {
+        if (age === "200") {
+          cy.wrap($row).should("contain.text", "No data found");
+        } else {
+          cy.wrap($row).find("td").last().should("have.text", age);
+        }
+      });
+    });
   });
 });
