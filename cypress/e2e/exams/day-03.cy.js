@@ -68,32 +68,40 @@ describe("Daily practice routine", () => {
       });
   });
 
-  it("Task #3", () => {
+  it("Should create a new user and validate table row data", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
-    const userData = ["John", "Test", "@johnqa", "john@test.com", "25"];
+    const userData = {
+      "First Name": "John",
+      "Last Name": "Test",
+      Username: "@johnqa",
+      "E-mail": "john@test.com",
+      Age: "25",
+    };
 
     cy.get(".nb-plus").click();
 
     cy.get("thead tr")
       .last()
       .within(() => {
-        cy.get('input[placeholder="First Name"]').type(userData[0]);
-        cy.get('input[placeholder="Last Name"]').type(userData[1]);
-        cy.get('input[placeholder="Username"]').type(userData[2]);
-        cy.get('input[placeholder="E-mail"]').type(userData[3]);
-        cy.get('input[placeholder="Age"]').type(userData[4]);
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`).type(value);
+        }
 
         cy.get(".nb-checkmark").click();
       });
 
+    const values = Object.values(userData);
+
     cy.get("tbody")
-      .contains("tr", "john@test.com")
+      .contains("tr", userData["E-mail"])
       .within(() => {
         cy.get("td").each(($td, index) => {
           if (index > 1) {
-            cy.wrap($td).should("have.text", userData[index - 2]);
+            const dataIndex = index - 2;
+
+            cy.wrap($td).should("have.text", values[dataIndex]);
           }
         });
       });
@@ -152,6 +160,7 @@ describe("Daily practice routine", () => {
 
     cy.wrap(ages).each((age) => {
       cy.get('input[placeholder="Age"]').clear().type(age);
+
       cy.wait(500);
 
       cy.get("tbody tr").each(($row) => {
