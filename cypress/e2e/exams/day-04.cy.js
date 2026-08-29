@@ -1,5 +1,22 @@
 /// <reference types="cypress"/>
 
+function checkCheckbox(selector) {
+  cy.root()
+    .contains(selector)
+    .closest("nb-checkbox")
+    .find('[type="checkbox"]')
+    .check({ force: true })
+    .should("be.checked");
+}
+function uncheckCheckbox(selector) {
+  cy.root()
+    .contains(selector)
+    .closest("nb-checkbox")
+    .find('[type="checkbox"]')
+    .uncheck({ force: true })
+    .should("not.be.checked");
+}
+
 describe("Form Layouts", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -112,5 +129,68 @@ describe("Form Layouts", () => {
           .should("have.value", value);
       }
     });
+  });
+
+  it("Should select and unselect checkboxes correctly", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Toastr").click();
+
+    // Проверка включения и выключения чекбокса
+    checkCheckbox("Hide on click");
+    uncheckCheckbox("Hide on click");
+
+    checkCheckbox("Prevent arising of duplicate toast");
+    uncheckCheckbox("Prevent arising of duplicate toast");
+
+    checkCheckbox("Show toast with icon");
+    uncheckCheckbox("Show toast with icon");
+
+    // Проверка что одновременно можно включить 2 чек бокса
+    checkCheckbox("Hide on click");
+    checkCheckbox("Prevent arising of duplicate toast");
+
+    uncheckCheckbox("Hide on click");
+    uncheckCheckbox("Prevent arising of duplicate toast");
+
+    checkCheckbox("Hide on click");
+    checkCheckbox("Show toast with icon");
+
+    uncheckCheckbox("Hide on click");
+    uncheckCheckbox("Show toast with icon");
+
+    checkCheckbox("Prevent arising of duplicate toast");
+    checkCheckbox("Show toast with icon");
+
+    uncheckCheckbox("Prevent arising of duplicate toast");
+    uncheckCheckbox("Show toast with icon");
+
+    // Проверка возможности активации всех чекбоксов
+    checkCheckbox("Hide on click");
+    checkCheckbox("Prevent arising of duplicate toast");
+    checkCheckbox("Show toast with icon");
+  });
+
+  it("Should validate Larry Bird data in the correct table columns", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const personData = [
+      "3",
+      "Larry",
+      "Bird",
+      "@twitter",
+      "twitter@outlook.com",
+      "18",
+    ];
+
+    cy.get("tbody")
+      .contains("tr", "Larry")
+      .within(() => {
+        cy.get("td").each(($td, index) => {
+          if (index > 0) {
+            cy.wrap($td).should("have.text", personData[index - 1]);
+          }
+        });
+      });
   });
 });
