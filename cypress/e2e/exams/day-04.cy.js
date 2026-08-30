@@ -194,7 +194,7 @@ describe("Form Layouts", () => {
       });
   });
 
-  it.only("Should create a new user and validate table row data", () => {
+  it("Should create a new user and validate table row data", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -230,5 +230,35 @@ describe("Form Layouts", () => {
           }
         });
       });
+  });
+
+  it("Should update user data in Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = {
+      "First Name": "Lawrence",
+      Age: "35",
+    };
+
+    cy.contains("tbody tr", "Larry").within(() => {
+      cy.get(".nb-edit").click();
+    });
+
+    cy.get("tbody tr")
+      .find(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`).clear().type(value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["First Name"]).within(() => {
+      cy.get("td").eq(2).should("have.text", userData["First Name"]);
+      cy.get("td").last().should("have.text", userData.Age);
+    });
   });
 });
