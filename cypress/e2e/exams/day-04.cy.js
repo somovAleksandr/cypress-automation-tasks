@@ -261,4 +261,30 @@ describe("Form Layouts", () => {
       cy.get("td").last().should("have.text", userData.Age);
     });
   });
+
+  it.only("Should delete user from Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        cy.get('input[placeholder="First Name"]').type("Ruben");
+      });
+
+    cy.get("tbody tr").should("have.length", 1).and("contain.text", "Ruben");
+
+    cy.contains("tbody tr", "Ruben").within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", "Ruben").should("not.exist");
+    cy.get("tbody tr").should("contain.text", "No data found");
+  });
 });
