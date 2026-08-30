@@ -262,7 +262,7 @@ describe("Form Layouts", () => {
     });
   });
 
-  it.only("Should delete user from Smart Table", () => {
+  it("Should delete user from Smart Table", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -287,4 +287,41 @@ describe("Form Layouts", () => {
     cy.contains("tbody tr", "Ruben").should("not.exist");
     cy.get("tbody tr").should("contain.text", "No data found");
   });
+
+  it.only("Should filter Smart Table by age", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const ages = ["20", "30", "40", "200"];
+
+    cy.wrap(ages).each((age) => {
+      cy.get("thead tr")
+        .last()
+        .find('input[placeholder="Age"]')
+        .clear()
+        .type(age);
+
+      cy.wait(500);
+
+      cy.get("tbody tr").each(($row) => {
+        if (age === "200") {
+          cy.wrap($row).should("contain.text", "No data found");
+        } else {
+          cy.wrap($row).find("td").last().should("have.text", age);
+        }
+      });
+    });
+  });
 });
+// Твоя задача для каждого age из массива:
+
+// найти фильтр Age;
+// очистить его;
+// ввести текущее значение;
+// получить все tbody tr;
+// если age !== "200":
+// пройти по каждой строке;
+// взять последнюю ячейку td;
+// проверить, что её текст строго равен текущему age;
+// если age === "200":
+// проверить No data found.
