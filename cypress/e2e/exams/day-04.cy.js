@@ -288,7 +288,7 @@ describe("Form Layouts", () => {
     cy.get("tbody tr").should("contain.text", "No data found");
   });
 
-  it.only("Should filter Smart Table by age", () => {
+  it("Should filter Smart Table by age", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -312,16 +312,19 @@ describe("Form Layouts", () => {
       });
     });
   });
-});
-// Твоя задача для каждого age из массива:
 
-// найти фильтр Age;
-// очистить его;
-// ввести текущее значение;
-// получить все tbody tr;
-// если age !== "200":
-// пройти по каждой строке;
-// взять последнюю ячейку td;
-// проверить, что её текст строго равен текущему age;
-// если age === "200":
-// проверить No data found.
+  it("Should validate Email placeholder using invoke and then", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      cy.contains("Email")
+        .closest(".form-group")
+        .find("input")
+        .invoke("attr", "placeholder")
+        .then((placeholder) => {
+          expect(placeholder.trim()).to.equal("Email");
+        });
+    });
+  });
+});
