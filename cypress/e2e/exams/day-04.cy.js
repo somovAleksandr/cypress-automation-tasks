@@ -17,6 +17,10 @@ function uncheckCheckbox(selector) {
     .should("not.be.checked");
 }
 
+function getTableRow(value) {
+  return cy.get("tbody").contains("tr", value);
+}
+
 describe("Form Layouts", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -325,6 +329,18 @@ describe("Form Layouts", () => {
         .then((placeholder) => {
           expect(placeholder.trim()).to.equal("Email");
         });
+    });
+  });
+
+  it("Should find table row using helper function", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    getTableRow("Larry").within(() => {
+      cy.get("td").should("have.length", 7);
+    });
+    getTableRow("Ruben").within(() => {
+      cy.get("td").should("have.length", 7);
     });
   });
 });
