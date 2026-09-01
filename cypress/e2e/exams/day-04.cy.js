@@ -343,4 +343,106 @@ describe("Form Layouts", () => {
       cy.get("td").should("have.length", 7);
     });
   });
+
+  it("Should perform full CRUD flow in Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = {
+      "First Name": "Michael",
+      "Last Name": "Automation",
+      Username: "@michaelqa",
+      "E-mail": "michael.qa@test.com",
+      Age: "27",
+    };
+
+    const values = Object.values(userData);
+
+    const updatedData = {
+      "First Name": "Mike",
+      Age: "35",
+    };
+
+    cy.get("thead").find(".nb-plus").click();
+
+    cy.get("thead")
+      .find(".nb-checkmark")
+      .closest("tr")
+      .then(($row) => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.wrap($row).find(`input[placeholder="${key}"]`).type(value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 1) {
+          cy.wrap($td).should("have.text", values[index - 2]);
+        }
+      });
+    });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get(".nb-edit").click();
+    });
+
+    cy.get("tbody tr")
+      .find(".nb-checkmark")
+      .closest("tr")
+      .then(($row) => {
+        for (const [key, value] of Object.entries(updatedData)) {
+          cy.wrap($row).find(`input[placeholder="${key}"]`).clear().type(value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", updatedData["First Name"]).then(($row) => {
+      cy.wrap($row)
+        .find("td")
+        .eq(2)
+        .should("have.text", updatedData["First Name"]);
+      cy.wrap($row).find("td").last().should("have.text", updatedData.Age);
+    });
+
+    cy.get("thead tr")
+      .last()
+      .then(($row) => {
+        cy.wrap($row)
+          .find('input[placeholder="E-mail"]')
+          .type(userData["E-mail"]);
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).then(($row) => {
+      cy.wrap($row)
+        .find("td")
+        .eq(2)
+        .should("have.text", updatedData["First Name"]);
+
+      cy.wrap($row).find("td").last().should("have.text", updatedData.Age);
+    });
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("tbody tr", updatedData["First Name"]).within(() => {
+      cy.get(".nb-trash").click();
+
+      cy.get("@dialog").should("be.called");
+    });
+
+    cy.get("thead tr")
+      .last()
+      .then(($row) => {
+        cy.wrap($row)
+          .find('input[placeholder="First Name"]')
+          .clear()
+          .type(updatedData["First Name"]);
+      });
+
+    cy.get("tbody tr").should("contain.text", "No data found");
+  });
 });
