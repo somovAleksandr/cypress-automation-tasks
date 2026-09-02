@@ -104,4 +104,44 @@ describe("Daily Cypress Exam #03", () => {
         .click();
     });
   });
+
+  it("Should fill Inline form using user data object", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    const userData = {
+      "Jane Doe": "Alex QA",
+      Email: "alex.qa@test.com",
+    };
+
+    cy.contains("nb-card", "Inline form").within(() => {
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`)
+          .type(value)
+          .should("have.value", value);
+      }
+    });
+  });
+
+  it.only("Should validate Larry Bird data in the correct table columns", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const personData = [
+      "3",
+      "Larry",
+      "Bird",
+      "@twitter",
+      "twitter@outlook.com",
+      "18",
+    ];
+
+    cy.contains("tbody tr", "Larry").within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 0) {
+          cy.wrap($td).should("have.text", personData[index - 1]);
+        }
+      });
+    });
+  });
 });
