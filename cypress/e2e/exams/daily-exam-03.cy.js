@@ -123,7 +123,7 @@ describe("Daily Cypress Exam #03", () => {
     });
   });
 
-  it.only("Should validate Larry Bird data in the correct table columns", () => {
+  it("Should validate Larry Bird data in the correct table columns", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -140,6 +140,41 @@ describe("Daily Cypress Exam #03", () => {
       cy.get("td").each(($td, index) => {
         if (index > 0) {
           cy.wrap($td).should("have.text", personData[index - 1]);
+        }
+      });
+    });
+  });
+
+  it("Should create a new user and validate table row data", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = {
+      "First Name": "Alex",
+      "Last Name": "Automation",
+      Username: "@alexqa",
+      "E-mail": "alex.qa@test.com",
+      Age: "29",
+    };
+
+    const values = Object.values(userData);
+
+    cy.get("thead .nb-plus").click();
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`).type(value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 1) {
+          cy.wrap($td).should("have.text", values[index - 2]);
         }
       });
     });
