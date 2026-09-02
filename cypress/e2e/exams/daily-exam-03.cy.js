@@ -1,0 +1,107 @@
+/// <reference types="cypress"/>
+
+function getInputByLabel(labelText) {
+  return cy.root().contains(labelText).closest(".form-group").find("input");
+}
+
+function checkLabelText(label) {
+  return cy.contains("label", label).should("have.text", label);
+}
+
+function getRadioButtonByLabel(label) {
+  return cy.root().contains(label).closest("nb-radio").find('[type="radio"]');
+}
+
+function verifyRadioButtons(
+  labelText,
+  totalCount,
+  enabledCount,
+  disabledCount,
+) {
+  cy.root()
+    .contains(labelText)
+    .closest(".form-group")
+    .find('[type="radio"]')
+    .then(($radios) => {
+      expect($radios).to.have.length(totalCount);
+      expect($radios.not(":disabled")).to.have.length(enabledCount);
+      expect($radios.filter(":disabled")).to.have.length(disabledCount);
+    });
+}
+
+describe("Daily Cypress Exam #03", () => {
+  beforeEach(() => {
+    cy.visit("/");
+  });
+
+  it("Should validate Using the Grid form UI", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      cy.get("nb-card-header").should("have.text", "Using the Grid");
+
+      checkLabelText("Email");
+      checkLabelText("Password");
+      checkLabelText("Radios");
+
+      getInputByLabel("Email").should("have.attr", "placeholder", "Email");
+      getInputByLabel("Password").should(
+        "have.attr",
+        "placeholder",
+        "Password",
+      );
+
+      getInputByLabel("Email").should("have.value", "");
+      getInputByLabel("Password").should("have.value", "");
+
+      verifyRadioButtons("Radios", 3, 2, 1);
+
+      getRadioButtonByLabel("Option 1")
+        .should("be.enabled")
+        .and("not.be.checked");
+
+      getRadioButtonByLabel("Option 2")
+        .should("be.enabled")
+        .and("not.be.checked");
+
+      getRadioButtonByLabel("Disabled Option")
+        .should("be.disabled")
+        .and("be.checked");
+
+      cy.contains("button", "Sign in")
+        .should("be.enabled")
+        .and("be.visible")
+        .and("have.text", "Sign in");
+    });
+  });
+
+  it("Should fill and submit Using the Grid form", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      getInputByLabel("Email")
+        .type("qa.exam@test.com")
+        .should("have.value", "qa.exam@test.com");
+      getInputByLabel("Password").type("123456").should("have.value", "123456");
+
+      getRadioButtonByLabel("Option 1")
+        .check({ force: true })
+        .should("be.checked");
+
+      getRadioButtonByLabel("Option 2")
+        .should("be.enabled")
+        .and("not.be.checked");
+
+      getRadioButtonByLabel("Disabled Option")
+        .should("be.disabled")
+        .and("not.be.checked");
+
+      cy.contains("button", "Sign in")
+        .should("be.enabled")
+        .and("be.visible")
+        .click();
+    });
+  });
+});
