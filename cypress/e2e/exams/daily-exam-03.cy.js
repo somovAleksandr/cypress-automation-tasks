@@ -270,4 +270,17 @@ describe("Daily Cypress Exam #03", () => {
       cy.get("td").should("have.length", 7);
     });
   });
+
+  it("Should validate Email placeholder using invoke then", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      cy.get('input[placeholder="Email"]')
+        .invoke("attr", "placeholder")
+        .then((placeholderText) => {
+          expect(placeholderText.trim()).to.equal("Email");
+        });
+    });
+  });
 });
