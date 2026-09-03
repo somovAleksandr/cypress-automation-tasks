@@ -369,4 +369,46 @@ describe("Daily Cypress Exam #03", () => {
 
     cy.get("tbody tr").should("contain.text", "No data found");
   });
+
+  it("Should select a date from Datepicker", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    cy.get(".day-cell").not(".bounding-month").contains("12").click();
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", "Sep 12, 2026");
+    });
+  });
+
+  it("Should select a dynamic future date", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    const date = new Date();
+
+    date.setDate(date.getDate() + 5);
+
+    const futureDay = date.getDate();
+
+    const expectedDate = date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    cy.get(".day-cell").not(".bounding-month").contains(futureDay).click();
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
+  });
 });
