@@ -213,7 +213,7 @@ describe("Daily Cypress Exam #03", () => {
     });
   });
 
-  it.only("Should filter Smart Table by age", () => {
+  it("Should filter Smart Table by age", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -236,5 +236,22 @@ describe("Daily Cypress Exam #03", () => {
         });
       }
     });
+  });
+
+  it("Should delete user from Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("tbody tr", "Ruben").within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", "Ruben").should("not.exist");
   });
 });
