@@ -29,6 +29,10 @@ function verifyRadioButtons(
     });
 }
 
+function getTableRow(value) {
+  return cy.root().contains("tbody tr", value);
+}
+
 describe("Daily Cypress Exam #03", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -253,5 +257,17 @@ describe("Daily Cypress Exam #03", () => {
     cy.get("@dialog").should("be.called");
 
     cy.contains("tbody tr", "Ruben").should("not.exist");
+  });
+
+  it("Should find table rows using reusable helper", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    getTableRow("Ruben").within(() => {
+      cy.get("td").should("have.length", 7);
+    });
+    getTableRow("Mark").within(() => {
+      cy.get("td").should("have.length", 7);
+    });
   });
 });
