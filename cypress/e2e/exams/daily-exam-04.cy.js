@@ -50,6 +50,39 @@ function verifyDisabledRadio(label) {
     .and("be.checked");
 }
 
+function selectRadio(label) {
+  cy.root()
+    .contains(label)
+    .closest("nb-radio")
+    .find('[type="radio"]')
+    .check({ force: true })
+    .should("be.checked");
+}
+
+function verifyBTN(buttonText) {
+  cy.root()
+    .contains("button", buttonText)
+    .should("be.visible")
+    .and("be.enabled");
+}
+
+function verifyUncheckedRadio(label) {
+  cy.root()
+    .contains(label)
+    .closest("nb-radio")
+    .find('input[type="radio"]')
+    .should("not.be.checked");
+}
+
+function verifyDisabledUncheckedRadio(label) {
+  cy.root()
+    .contains(label)
+    .closest("nb-radio")
+    .find('input[type="radio"]')
+    .should("be.disabled")
+    .and("not.be.checked");
+}
+
 describe("Daily Exam #4", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -82,6 +115,37 @@ describe("Daily Exam #4", () => {
       verifyDisabledRadio("Disabled Option");
 
       cy.contains("button", "Sign in").should("be.visible").and("be.enabled");
+    });
+  });
+
+  it("Should interact with Using the Grid", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      cy.contains("Email")
+        .closest(".form-group")
+        .find("input")
+        .type("alex@test.com")
+        .should("have.value", "alex@test.com");
+
+      cy.contains("Password")
+        .closest(".form-group")
+        .find("input")
+        .type("Test12345")
+        .should("have.value", "Test12345");
+
+      selectRadio("Option 1");
+
+      verifyUncheckedRadio("Option 2");
+      verifyDisabledUncheckedRadio("Disabled Option");
+
+      selectRadio("Option 2");
+
+      verifyUncheckedRadio("Option 1");
+      verifyUncheckedRadio("Disabled Option");
+
+      verifyBTN("Sign in");
     });
   });
 });
