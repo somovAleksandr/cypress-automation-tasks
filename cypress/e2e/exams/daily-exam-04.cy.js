@@ -244,4 +244,36 @@ describe("Daily Exam #4", () => {
       });
     });
   });
+
+  it("Should update Larry user data", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const updatedData = {
+      "First Name": "Lawrence",
+      Age: "35",
+    };
+
+    cy.contains("tbody tr", "Larry").within(() => {
+      cy.get(".nb-edit").click();
+    });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(updatedData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .clear()
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", updatedData["First Name"]).within(() => {
+      cy.get("td").eq(2).should("have.text", updatedData["First Name"]);
+      cy.get("td").last().should("have.text", updatedData.Age);
+    });
+  });
 });
