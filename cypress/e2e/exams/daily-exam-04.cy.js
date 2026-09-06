@@ -181,4 +181,26 @@ describe("Daily Exam #4", () => {
       }
     });
   });
+
+  it("Should validate Larry row data", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = [
+      "3",
+      "Larry",
+      "Bird",
+      "@twitter",
+      "twitter@outlook.com",
+      "18",
+    ];
+
+    cy.contains("tbody tr", "Larry").within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 0) {
+          cy.wrap($td).should("have.text", userData[index - 1]);
+        }
+      });
+    });
+  });
 });
