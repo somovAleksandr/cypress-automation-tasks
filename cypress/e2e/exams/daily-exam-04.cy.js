@@ -148,4 +148,37 @@ describe("Daily Exam #4", () => {
       verifyBTN("Sign in");
     });
   });
+
+  it("Should submit Inline form using test data", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    const userData = {
+      "Jane Doe": "Alex",
+      Email: "alex@test.com",
+    };
+
+    cy.contains("nb-card", "Inline form").within(() => {
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`)
+          .type(value)
+          .should("have.value", value);
+      }
+
+      cy.contains("Remember me")
+        .closest("nb-checkbox")
+        .find('[type="checkbox"]')
+        .check({ force: true })
+        .should("be.checked");
+
+      cy.contains("button", "Submit")
+        .should("be.visible")
+        .and("be.enabled")
+        .click();
+
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`).should("have.value", value);
+      }
+    });
+  });
 });
