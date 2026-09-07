@@ -83,6 +83,10 @@ function verifyDisabledUncheckedRadio(label) {
     .and("not.be.checked");
 }
 
+function findInputByLabel(label) {
+  return cy.root().contains(label).closest(".form-group").find("input");
+}
+
 describe("Daily Exam #4", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -318,15 +322,70 @@ describe("Daily Exam #4", () => {
 
     cy.contains("tbody tr", "Ruben").should("not.exist");
   });
+
+  it("Should validate Email input using helper and invoke", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      findInputByLabel("Email").should("exist").and("be.visible");
+
+      findInputByLabel("Email")
+        .invoke("attr", "placeholder")
+        .then((placeholder) => {
+          expect(placeholder.trim()).to.equal("Email");
+        });
+    });
+  });
+
+  it("Should select a future date across months", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    function selectFutureDate(days) {
+      const date = new Date();
+
+      date.setDate(date.getDate() + days);
+
+      const futureDay = date.getDate();
+
+      const futureMonthLong = date.toLocaleString("en-US", { month: "long" });
+      const futureYear = date.getFullYear();
+
+      cy.get("nb-calendar-view-mode")
+        .invoke("text")
+        .then((calendarMonthAndYear) => {
+          if (
+            !calendarMonthAndYear.includes(futureMonthLong) ||
+            !calendarMonthAndYear.includes(futureYear)
+          ) {
+            cy.get('[data-name="chevron-right"]').click();
+            selectFutureDate(days);
+          } else {
+            cy.get(".day-cell")
+              .not(".bounding-month")
+              .contains(futureDay)
+              .click();
+          }
+        });
+
+      const expectedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      return expectedDate;
+    }
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    const expectedDate = selectFutureDate(200);
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
+  });
 });
-
-// Tables & Data → Smart Table
-
-// ТЗ:
-
-// найти строку пользователя Ruben;
-// перехватить window.confirm;
-// сделать так, чтобы confirm возвращал true;
-// нажать .nb-trash в строке Ruben;
-// проверить, что confirm действительно был вызван;
-// проверить, что строка Ruben исчезла из таблицы.
