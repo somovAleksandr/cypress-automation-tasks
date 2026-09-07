@@ -301,4 +301,32 @@ describe("Daily Exam #4", () => {
       }
     });
   });
+
+  it("Should delete Ruben user after confirmation", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("tbody tr", "Ruben").within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", "Ruben").should("not.exist");
+  });
 });
+
+// Tables & Data → Smart Table
+
+// ТЗ:
+
+// найти строку пользователя Ruben;
+// перехватить window.confirm;
+// сделать так, чтобы confirm возвращал true;
+// нажать .nb-trash в строке Ruben;
+// проверить, что confirm действительно был вызван;
+// проверить, что строка Ruben исчезла из таблицы.
