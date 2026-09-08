@@ -110,4 +110,26 @@ describe("Daily exam #5", () => {
       }
     });
   });
+
+  it("Should validate Larry's row in the Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const expectedData = [
+      "3",
+      "Larry",
+      "Bird",
+      "@twitter",
+      "twitter@outlook.com",
+      "18",
+    ];
+
+    cy.contains("tbody tr", "Larry").within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 0) {
+          cy.wrap($td).should("have.text", expectedData[index - 1]);
+        }
+      });
+    });
+  });
 });
