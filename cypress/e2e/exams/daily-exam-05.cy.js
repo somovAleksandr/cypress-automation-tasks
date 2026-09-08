@@ -77,4 +77,37 @@ describe("Daily exam #5", () => {
       cy.get("@passwordInput").should("have.value", "Test12345");
     });
   });
+
+  it("Should fill and submit Inline form using object data", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Inline form").within(() => {
+      const userData = {
+        "Jane Doe": "Michael Brown",
+        Email: "test@mail.com",
+      };
+
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`)
+          .type(value)
+          .should("have.value", value);
+      }
+
+      cy.contains("Remember me")
+        .closest("nb-checkbox")
+        .find('input[type="checkbox"]')
+        .check({ force: true })
+        .should("be.checked");
+
+      cy.contains("button", "Submit")
+        .should("be.visible")
+        .and("be.enabled")
+        .click();
+
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`).should("have.value", value);
+      }
+    });
+  });
 });
