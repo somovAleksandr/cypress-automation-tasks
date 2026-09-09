@@ -170,7 +170,7 @@ describe("Daily exam #5", () => {
     });
   });
 
-  it.only("Should update user row with new data", () => {
+  it("Should update user row with new data", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -198,6 +198,31 @@ describe("Daily exam #5", () => {
     cy.contains("tbody tr", updatedData["First Name"]).within(() => {
       cy.get("td").eq(2).should("have.text", updatedData["First Name"]);
       cy.get("td").last().should("have.text", updatedData.Age);
+    });
+  });
+
+  it.only("Should filter table by age", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const ages = ["20", "30", "40", "200"];
+
+    cy.wrap(ages).each((age) => {
+      cy.get("thead tr")
+        .last()
+        .find('input[placeholder="Age"]')
+        .clear()
+        .type(age);
+
+      cy.wait(500);
+
+      if (age === "200") {
+        cy.get("tbody tr").should("contain.text", "No data found");
+      } else {
+        cy.get("tbody tr").each(($tr) => {
+          cy.wrap($tr).find("td").last().should("have.text", age);
+        });
+      }
     });
   });
 });
