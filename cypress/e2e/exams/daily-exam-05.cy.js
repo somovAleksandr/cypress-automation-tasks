@@ -201,7 +201,7 @@ describe("Daily exam #5", () => {
     });
   });
 
-  it.only("Should filter table by age", () => {
+  it("Should filter table by age", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -224,5 +224,22 @@ describe("Daily exam #5", () => {
         });
       }
     });
+  });
+
+  it("Should find and delete table Row by name", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("tbody tr", "Ruben").within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", "Ruben").should("not.exist");
   });
 });
