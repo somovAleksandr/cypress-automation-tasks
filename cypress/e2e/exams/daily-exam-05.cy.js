@@ -1,5 +1,9 @@
 /// <reference types="cypress"/>
 
+function findInputByLabel(label) {
+  return cy.root().contains(label).closest(".form-group").find("input");
+}
+
 describe("Daily exam #5", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -241,5 +245,71 @@ describe("Daily exam #5", () => {
     cy.get("@dialog").should("be.called");
 
     cy.contains("tbody tr", "Ruben").should("not.exist");
+  });
+
+  it("Should invoke and verify placeholder by label text", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      findInputByLabel("Email").should("exist").and("be.visible");
+
+      findInputByLabel("Email")
+        .invoke("attr", "placeholder")
+        .then((placeholder) => {
+          expect(placeholder.trim()).to.equal("Email");
+        });
+    });
+  });
+
+  it("Should select a future date across months", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    function selectFutureDate(days) {
+      const date = new Date();
+
+      date.setDate(date.getDate() + days);
+
+      const futureDay = date.getDate();
+
+      const longMonth = date.toLocaleDateString("en-US", { month: "long" });
+      const futureYear = date.getFullYear();
+
+      cy.get("nb-calendar-view-mode")
+        .invoke("text")
+        .then((calendarMonthAndYear) => {
+          if (
+            !calendarMonthAndYear.includes(longMonth) ||
+            !calendarMonthAndYear.includes(futureYear)
+          ) {
+            cy.get('[data-name="chevron-right"]').click();
+            selectFutureDate(days);
+          } else {
+            cy.get(".day-cell")
+              .not(".bounding-month")
+              .contains(futureDay)
+              .click();
+          }
+        });
+
+      const expectedDate = date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      return expectedDate;
+    }
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    const expectedDate = selectFutureDate(300);
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
   });
 });
