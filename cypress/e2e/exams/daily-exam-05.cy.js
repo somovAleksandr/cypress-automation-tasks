@@ -312,4 +312,129 @@ describe("Daily exam #5", () => {
       cy.get("input").should("have.value", expectedDate);
     });
   });
+
+  it("Should select a future date across month", () => {
+    function selectFutureDate(days) {
+      const date = new Date();
+
+      date.setDate(date.getDate() + days);
+
+      const futureDate = date.getDate();
+
+      const longMonth = date.toLocaleDateString("en-US", { month: "long" });
+      const futureYear = String(date.getFullYear());
+
+      cy.get("nb-calendar-view-mode")
+        .invoke("text")
+        .then((calendarMonthAndYear) => {
+          if (
+            !calendarMonthAndYear.includes(longMonth) ||
+            !calendarMonthAndYear.includes(futureYear)
+          ) {
+            cy.get('[data-name="chevron-right"]').click();
+            selectFutureDate(days);
+          } else {
+            cy.get(".day-cell")
+              .not(".bounding-month")
+              .contains(futureDate)
+              .click();
+          }
+        });
+
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    const expectedDate = selectFutureDate(45);
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
+  });
+
+  it("Should create and delete new user in the Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = {
+      "First Name": "James",
+      "Last Name": "Morrison",
+      Username: "J@mes",
+      "E-mail": "qweasdqe@gmail.com",
+      Age: "35",
+    };
+
+    const updatedData = {
+      "First Name": "John",
+      Age: "93",
+    };
+
+    const values = Object.values(userData);
+
+    cy.get("thead").find(".nb-plus").click();
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 1) {
+          cy.wrap($td).should("have.text", values[index - 2]);
+        }
+      });
+    });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get(".nb-edit").click();
+    });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(updatedData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .clear()
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").eq(2).should("have.text", updatedData["First Name"]);
+      cy.get("td").last().should("have.text", updatedData.Age);
+    });
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", userData["E-mail"]).should("not.exist");
+  });
 });
