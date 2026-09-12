@@ -1,3 +1,5 @@
-# Cypress Automation Portfolio
+# Cypress Automation Tasks
 
-Практика автоматизации веб-приложений с использованием Cypress и JavaScript.
+UI automation practice with Cypress and JavaScript.
+
+This repository contains practical test scenarios for forms, tables, checkboxes, date pickers, and other UI elements.
