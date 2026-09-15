@@ -157,4 +157,35 @@ describe("Daily Exam #6", () => {
 
     cy.contains("tbody tr", userData["E-mail"]).should("not.exist");
   });
+
+  it("Should filter and delete Ruben by first name", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        cy.get('input[placeholder="First Name"]').type("Ruben");
+      });
+
+    cy.wait(500);
+
+    cy.get("tbody tr").each(($row) => {
+      cy.wrap($row).find("td").eq(2).should("have.text", "Ruben");
+    });
+
+    cy.contains("tbody tr", "Ruben").should("be.visible");
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("tbody tr", "Ruben").within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.get("tbody tr").should("contain.text", "No data found");
+  });
 });
