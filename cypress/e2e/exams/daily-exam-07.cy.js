@@ -20,6 +20,37 @@ function findCheckboxByLabel(label) {
     .find('input[type="checkbox"]');
 }
 
+function selectFutureDate(days) {
+  const date = new Date();
+
+  date.setDate(date.getDate() + days);
+
+  const futureDate = date.getDate();
+
+  const futureMonthLong = date.toLocaleDateString("en-US", { month: "long" });
+  const futureYear = String(date.getFullYear());
+
+  cy.get("nb-calendar-view-mode")
+    .invoke("text")
+    .then((calendarMonthAndYear) => {
+      if (
+        calendarMonthAndYear.includes(futureMonthLong) &&
+        calendarMonthAndYear.includes(futureYear)
+      ) {
+        cy.get(".day-cell").not(".bounding-month").contains(futureDate).click();
+      } else {
+        cy.get('[data-name="chevron-right"]').click();
+        selectFutureDate(days);
+      }
+    });
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 describe("Exam #7", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -176,5 +207,20 @@ describe("Exam #7", () => {
     cy.get("@dialog").should("be.called");
 
     cy.contains("tbody tr", updatedData["First Name"]).should("not.exist");
+  });
+
+  it.only("Should select future date in the Datepicker", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    const expectedDate = selectFutureDate(120);
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
   });
 });
