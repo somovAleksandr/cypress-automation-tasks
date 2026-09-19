@@ -209,7 +209,7 @@ describe("Exam #7", () => {
     cy.contains("tbody tr", updatedData["First Name"]).should("not.exist");
   });
 
-  it.only("Should select future date in the Datepicker", () => {
+  it("Should select future date in the Datepicker", () => {
     cy.contains("Forms").click();
     cy.contains("Datepicker").click();
 
@@ -222,5 +222,18 @@ describe("Exam #7", () => {
     cy.contains("nb-card", "Common Datepicker").within(() => {
       cy.get("input").should("have.value", expectedDate);
     });
+  });
+
+  it.only("Should select a new temperature in the slider", () => {
+    cy.get('[tabtitle="Temperature"] circle').should("exist").and("be.visible");
+
+    cy.get('[tabtitle="Temperature"] circle')
+      .invoke("attr", "cx", "9.71")
+      .should("have.attr", "cx", "9.71")
+      .invoke("attr", "cy", "126.30")
+      .should("have.attr", "cy", "126.30")
+      .click();
+
+    cy.get(".value.temperature.h1").should("contain.text", "15");
   });
 });
