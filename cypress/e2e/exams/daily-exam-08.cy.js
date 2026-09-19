@@ -1,0 +1,53 @@
+/// <reference types="cypress"/>
+
+describe("Daily Exam #8", () => {
+  beforeEach(() => {
+    cy.visit("/");
+  });
+
+  function getInputByLabel(label) {
+    return cy
+      .root()
+      .contains("label", label)
+      .closest(".form-group")
+      .find("input");
+  }
+
+  function getRadioByLabel(label) {
+    return cy
+      .root()
+      .contains(label)
+      .closest("nb-radio")
+      .find('input[type="radio"]');
+  }
+
+  it("Should fill inputs in Using the Grid form", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    cy.contains("nb-card", "Using the Grid").should("be.visible");
+
+    cy.contains("nb-card", "Using the Grid").within(() => {
+      getInputByLabel("Email")
+        .type("exam8@test.com")
+        .should("have.value", "exam8@test.com");
+      getInputByLabel("Password")
+        .type("Cypress888")
+        .should("have.value", "Cypress888");
+
+      getRadioByLabel("Option 2")
+        .should("be.enabled")
+        .and("not.be.checked")
+        .check({ force: true })
+        .should("be.checked");
+
+      getRadioByLabel("Option 1").should("be.enabled").and("not.be.checked");
+
+      getRadioByLabel("Disabled Option")
+        .should("be.disabled")
+        .and("not.be.checked");
+
+      cy.contains("button", "Sign in").should("be.visible").and("be.enabled");
+    });
+  });
+});

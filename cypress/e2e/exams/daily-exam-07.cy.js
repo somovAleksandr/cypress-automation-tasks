@@ -224,7 +224,7 @@ describe("Exam #7", () => {
     });
   });
 
-  it.only("Should select a new temperature in the slider", () => {
+  it("Should select a new temperature in the slider", () => {
     cy.get('[tabtitle="Temperature"] circle').should("exist").and("be.visible");
 
     cy.get('[tabtitle="Temperature"] circle')
