@@ -87,4 +87,82 @@ describe("Daily Exam #8", () => {
       }
     });
   });
+
+  it("Should complete CRUD flow for a Smart Table user", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = {
+      "First Name": "Camila",
+      "Last Name": "Jones",
+      Username: "camaJones",
+      "E-mail": "camila.exam8@test.com",
+      Age: "34",
+    };
+
+    const values = Object.values(userData);
+
+    const updatedData = {
+      "First Name": "Monika",
+      Age: "25",
+    };
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        cy.get(".nb-plus").click();
+      });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .type(value)
+            .should("have.value", value);
+        }
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 1) {
+          cy.wrap($td).should("have.text", values[index - 2]);
+        }
+      });
+    });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get(".nb-edit").click();
+    });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(updatedData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .clear()
+            .type(value)
+            .should("have.value", value);
+        }
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").eq(2).should("have.text", updatedData["First Name"]);
+      cy.get("td").last().should("have.text", updatedData.Age);
+    });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", userData["E-mail"]).should("not.exist");
+  });
 });
