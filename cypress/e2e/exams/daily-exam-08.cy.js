@@ -50,4 +50,41 @@ describe("Daily Exam #8", () => {
       cy.contains("button", "Sign in").should("be.visible").and("be.enabled");
     });
   });
+
+  it("Should fill and submit Basic form using object data", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    const userData = {
+      Email: "exam8.basic@test.com",
+      Password: "Basic888",
+    };
+
+    cy.contains("nb-card", "Basic form").should("be.visible");
+
+    cy.contains("nb-card", "Basic form").within(() => {
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`)
+          .type(value)
+          .should("have.value", value);
+      }
+
+      cy.contains("Check me out")
+        .closest("nb-checkbox")
+        .find('input[type="checkbox"]')
+        .should("be.enabled")
+        .and("not.be.checked")
+        .check({ force: true })
+        .should("be.checked");
+
+      cy.contains("button", "Submit")
+        .should("be.visible")
+        .and("be.enabled")
+        .click();
+
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`).should("have.value", value);
+      }
+    });
+  });
 });
