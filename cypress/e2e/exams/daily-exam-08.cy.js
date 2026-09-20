@@ -166,7 +166,7 @@ describe("Daily Exam #8", () => {
     cy.contains("tbody tr", userData["E-mail"]).should("not.exist");
   });
 
-  it.only("Should filter and delete row by first name in the Smart Table", () => {
+  it("Should filter and delete row by first name in the Smart Table", () => {
     cy.contains("Tables & Data").click();
     cy.contains("Smart Table").click();
 
@@ -195,5 +195,67 @@ describe("Daily Exam #8", () => {
     cy.contains("tbody tr", "Ruben").should("not.exist");
 
     cy.get("tbody tr").should("contain.text", "No data found");
+  });
+
+  it("Should select a future date in the Datepicker", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    function selectFutureDate(days) {
+      const date = new Date();
+
+      date.setDate(date.getDate() + days);
+
+      const futureDay = date.getDate();
+
+      const futureMonth = date.toLocaleDateString("en-US", { month: "long" });
+      const futureYear = String(date.getFullYear());
+
+      cy.get("nb-calendar-view-mode")
+        .invoke("text")
+        .then((calendarMonthAndYear) => {
+          if (
+            calendarMonthAndYear.includes(futureMonth) &&
+            calendarMonthAndYear.includes(futureYear)
+          ) {
+            cy.get(".day-cell")
+              .not(".bounding-month")
+              .contains(futureDay)
+              .click();
+          } else {
+            cy.get('[data-name="chevron-right"]').click();
+            selectFutureDate(days);
+          }
+        });
+
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    const expectedDate = selectFutureDate(150);
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
+  });
+
+  it("Should change temperature in the Temperature Slider", () => {
+    cy.get('[tabtitle="Temperature"] circle')
+      .should("exist")
+      .and("be.visible")
+      .invoke("attr", "cx", "112.76")
+      .should("have.attr", "cx", "112.76")
+      .invoke("attr", "cy", "11.86")
+      .should("have.attr", "cy", "11.86")
+      .click();
+
+    cy.get(".value.temperature.h1").should("contain.text", "20");
   });
 });
