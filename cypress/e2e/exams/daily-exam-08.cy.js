@@ -165,4 +165,35 @@ describe("Daily Exam #8", () => {
 
     cy.contains("tbody tr", userData["E-mail"]).should("not.exist");
   });
+
+  it.only("Should filter and delete row by first name in the Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        cy.get('input[placeholder="First Name"]').type("Ruben");
+      });
+
+    cy.wait(500);
+
+    cy.get("tbody tr").each(($row) => {
+      cy.wrap($row).find("td").eq(2).should("have.text", "Ruben");
+    });
+
+    cy.contains("tbody tr", "Ruben").within(() => {
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", "Ruben").should("not.exist");
+
+    cy.get("tbody tr").should("contain.text", "No data found");
+  });
 });
