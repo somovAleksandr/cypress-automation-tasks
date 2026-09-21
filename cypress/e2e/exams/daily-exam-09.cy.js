@@ -12,6 +12,14 @@ function getRadioByLabel(label) {
     .find('input[type="radio"]');
 }
 
+function getCheckboxByLabel(label) {
+  return cy
+    .root()
+    .contains(label)
+    .closest("nb-checkbox")
+    .find('input[type="checkbox"]');
+}
+
 describe("Daily Exam #9", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -55,6 +63,41 @@ describe("Daily Exam #9", () => {
       getRadioByLabel("Option 1").should("be.enabled").and("not.be.checked");
 
       cy.contains("button", "Sign in").should("be.visible").and("be.enabled");
+    });
+  });
+
+  it("Should fill Inline Form using data object", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    const userData = {
+      "Jane Doe": "Sarah Connor",
+      Email: "sarah.exam9@test.com",
+    };
+
+    cy.contains("nb-card", "Inline form").should("be.visible");
+
+    cy.contains("nb-card", "Inline form").within(() => {
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`)
+          .type(value)
+          .should("have.value", value);
+      }
+
+      getCheckboxByLabel("Remember me")
+        .should("be.enabled")
+        .and("not.be.checked")
+        .check({ force: true })
+        .should("be.checked");
+
+      cy.contains("button", "Submit")
+        .should("be.visible")
+        .and("be.enabled")
+        .click();
+
+      for (const [key, value] of Object.entries(userData)) {
+        cy.get(`input[placeholder="${key}"]`).should("have.value", value);
+      }
     });
   });
 });
