@@ -100,4 +100,45 @@ describe("Daily Exam #9", () => {
       }
     });
   });
+
+  it("Should create and read a new user", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = {
+      "First Name": "Nina",
+      "Last Name": "Stone",
+      Username: "@ninaqa",
+      "E-mail": "nina.exam9@test.com",
+      Age: "27",
+    };
+
+    const values = Object.values(userData);
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        cy.get(".nb-plus").click();
+      });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 1) {
+          cy.wrap($td).should("have.text", values[index - 2]);
+        }
+      });
+    });
+  });
 });
