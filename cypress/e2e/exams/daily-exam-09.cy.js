@@ -272,4 +272,17 @@ describe("Daily Exam #9", () => {
 
     cy.get(".value.temperature.h1").should("contain.text", "30");
   });
+
+  it("Should drag and drop item in the Drag & Drop card", () => {
+    cy.contains("Extra Components").click();
+    cy.contains("Drag & Drop").click();
+
+    cy.get("#todo-list div").first().trigger("dragstart");
+
+    cy.get("#drop-list").trigger("drop");
+
+    cy.get("#todo-list").should("not.contain.text", "Get groceries");
+
+    cy.get("#drop-list").should("contain.text", "Get groceries");
+  });
 });
