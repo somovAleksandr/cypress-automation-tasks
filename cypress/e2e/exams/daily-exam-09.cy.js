@@ -141,4 +141,46 @@ describe("Daily Exam #9", () => {
       });
     });
   });
+
+  it("Should update and delete Larry's row in the Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    const updatedData = {
+      "First Name": "Lawrence",
+      Age: "36",
+    };
+
+    cy.contains("tbody tr", "Larry").within(() => {
+      cy.get(".nb-edit").click();
+    });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(updatedData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .clear()
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", "Lawrence").within(() => {
+      cy.get("td").eq(2).should("have.text", updatedData["First Name"]);
+      cy.get("td").last().should("have.text", updatedData.Age);
+
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", "Lawrence").should("not.exist");
+  });
 });
