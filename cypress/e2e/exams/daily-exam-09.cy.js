@@ -208,4 +208,68 @@ describe("Daily Exam #9", () => {
       }
     });
   });
+
+  it("Should select future date in the Datepicker", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    function selectFutureDate(days) {
+      const date = new Date();
+
+      date.setDate(date.getDate() + days);
+
+      const futureDate = date.getDate();
+
+      const futureMonthLong = date.toLocaleDateString("en-US", {
+        month: "long",
+      });
+      const futureYear = String(date.getFullYear());
+
+      cy.get("nb-calendar-view-mode")
+        .invoke("text")
+        .then((calendarMonthAndYear) => {
+          if (
+            calendarMonthAndYear.includes(futureMonthLong) &&
+            calendarMonthAndYear.includes(futureYear)
+          ) {
+            cy.get(".day-cell")
+              .not(".bounding-month")
+              .contains(futureDate)
+              .click();
+          } else {
+            cy.get('[data-name="chevron-right"]').click();
+            selectFutureDate(days);
+          }
+        });
+
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    const expectedDate = selectFutureDate(210);
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
+  });
+
+  it("Should change temperature in the Temperature Slider", () => {
+    cy.get('[tabtitle="Temperature"] circle').should("exist").and("be.visible");
+
+    cy.get('[tabtitle="Temperature"] circle')
+      .invoke("attr", "cx", "232.63")
+      .should("have.attr", "cx", "232.63")
+      .invoke("attr", "cy", "232.63")
+      .should("have.attr", "cy", "232.63")
+      .click();
+
+    cy.get(".value.temperature.h1").should("contain.text", "30");
+  });
 });
