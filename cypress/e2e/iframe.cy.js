@@ -30,4 +30,24 @@ describe("iFrame", () => {
 
     cy.contains("button", "Dismiss Dialog").should("not.exist");
   });
+
+  it("Should interact with elements inside iFrame", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Dialog").click();
+
+    function getIframeBody(selector) {
+      return cy
+        .get(selector)
+        .its("0.contentDocument.body")
+        .should("not.be.empty")
+        .then(cy.wrap);
+    }
+
+    getIframeBody('[data-cy="esc-close-iframe"]')
+      .contains("Open Dialog without esc close")
+      .click();
+
+    cy.contains("button", "OK").should("be.visible").click();
+    cy.contains("button", "OK").should("not.exist");
+  });
 });
