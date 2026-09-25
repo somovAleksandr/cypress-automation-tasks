@@ -138,4 +138,71 @@ describe("Daily Exam #10", () => {
       });
     });
   });
+
+  it("Should update and delete row in the Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const updatedData = {
+      "First Name": "Lawrence",
+      Age: "36",
+    };
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    cy.contains("tbody tr", "Larry").within(() => {
+      cy.get(".nb-edit").click();
+    });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(updatedData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .clear()
+            .type(value)
+            .should("have.value", value);
+        }
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", updatedData["First Name"]).within(() => {
+      cy.get("td").eq(2).should("have.text", updatedData["First Name"]);
+      cy.get("td").last().should("have.text", updatedData.Age);
+
+      cy.get(".nb-trash").click();
+    });
+
+    cy.get("@dialog").should("be.called");
+
+    cy.contains("tbody tr", updatedData["First Name"]).should("not.exist");
+  });
+
+  it("Should filter table by age", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const ages = ["20", "30", "40", "200"];
+
+    cy.wrap(ages).each((age) => {
+      cy.get("thead tr")
+        .last()
+        .find('input[placeholder="Age"]')
+        .clear()
+        .type(age)
+        .should("have.value", age);
+
+      cy.wait(500);
+
+      if (age === "200") {
+        cy.get("tbody tr").should("contain.text", "No data found");
+      } else {
+        cy.get("tbody tr").each(($row) => {
+          cy.wrap($row).find("td").last().should("have.text", age);
+        });
+      }
+    });
+  });
 });
