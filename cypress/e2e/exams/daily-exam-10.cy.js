@@ -267,7 +267,7 @@ describe("Daily Exam #10", () => {
     cy.get(".value.temperature.h1").should("contain.text", "19");
   });
 
-  it.only("Should drag and drop element in the Extra components", () => {
+  it("Should drag and drop element in the Extra components", () => {
     cy.contains("Extra Components").click();
     cy.contains("Drag & Drop").click();
 
@@ -278,5 +278,50 @@ describe("Daily Exam #10", () => {
     cy.get("#todo-list").should("not.contain", "Clean my room");
 
     cy.get("#drop-list").should("contain.text", "Clean my room");
+  });
+
+  it("Should close dialog with Dismiss Dialog button", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Dialog").click();
+
+    function getIframeBody(selector) {
+      return cy
+        .get(selector)
+        .its("0.contentDocument.body")
+        .should("not.be.empty")
+        .then(cy.wrap);
+    }
+
+    getIframeBody('[data-cy="esc-close-iframe"]')
+      .contains("Open Dialog with esc close")
+      .click();
+
+    cy.contains("button", "Dismiss Dialog")
+      .should("be.visible")
+      .and("be.enabled")
+      .click();
+
+    cy.contains("button", "Dismiss Dialog").should("not.exist");
+  });
+
+  it("Should close dialog with OK button", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Dialog").click();
+
+    function getIframeBody(selector) {
+      return cy
+        .get(selector)
+        .its("0.contentDocument.body")
+        .should("not.be.empty")
+        .then(cy.wrap);
+    }
+
+    getIframeBody('[data-cy="esc-close-iframe"]')
+      .contains("Open Dialog without esc close")
+      .click();
+
+    cy.contains("button", "OK").should("be.visible").and("be.enabled").click();
+
+    cy.contains("button", "OK").should("not.exist");
   });
 });
