@@ -256,7 +256,7 @@ describe("Daily Exam #10", () => {
     });
   });
 
-  it.only("Should change temperature in the Temperature Slider", () => {
+  it("Should change temperature in the Temperature Slider", () => {
     cy.get('[tabtitle="Temperature"] circle')
       .invoke("attr", "cx", "60.25")
       .should("have.attr", "cx", "60.25")
@@ -265,5 +265,18 @@ describe("Daily Exam #10", () => {
       .click();
 
     cy.get(".value.temperature.h1").should("contain.text", "19");
+  });
+
+  it.only("Should drag and drop element in the Extra components", () => {
+    cy.contains("Extra Components").click();
+    cy.contains("Drag & Drop").click();
+
+    cy.contains("#todo-list div", "Clean my room").trigger("dragstart");
+
+    cy.get("#drop-list").trigger("drop");
+
+    cy.get("#todo-list").should("not.contain", "Clean my room");
+
+    cy.get("#drop-list").should("contain.text", "Clean my room");
   });
 });
