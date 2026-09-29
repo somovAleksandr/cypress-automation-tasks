@@ -80,4 +80,43 @@ describe("Exam #11", () => {
         cy.contains("button", "Sign in").should("be.visible").and("be.enabled");
       });
   });
+
+  it("Should fill form using data-driven method", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    const userData = {
+      Email: "exam11@test.com",
+      Password: "Automation11",
+    };
+
+    cy.contains("nb-card", "Basic form")
+      .should("be.visible")
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .should("have.value", "")
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.contains("label", "Check me out")
+          .closest("nb-checkbox")
+          .find('input[type="checkbox"]')
+          .should("be.visible")
+          .and("be.enabled")
+          .and("not.be.checked")
+          .check({ force: true })
+          .should("be.checked");
+
+        cy.contains("button", "Submit")
+          .should("be.visible")
+          .and("be.enabled")
+          .click();
+
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`).should("have.value", value);
+        }
+      });
+  });
 });
