@@ -119,4 +119,45 @@ describe("Exam #11", () => {
         }
       });
   });
+
+  it("Should create and read new user in the Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const userData = {
+      "First Name": "Emma",
+      "Last Name": "Stone",
+      Username: "@emmaqa",
+      "E-mail": "emma.exam11@test.com",
+      Age: "31",
+    };
+
+    const values = Object.values(userData);
+
+    cy.get("thead tr")
+      .last()
+      .within(() => {
+        cy.get(".nb-plus").click();
+      });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", userData["E-mail"]).within(() => {
+      cy.get("td").each(($td, index) => {
+        if (index > 1) {
+          cy.wrap($td).should("have.text", values[index - 2]);
+        }
+      });
+    });
+  });
 });
