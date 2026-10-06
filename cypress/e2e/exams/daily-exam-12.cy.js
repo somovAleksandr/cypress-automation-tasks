@@ -74,4 +74,39 @@ describe("Daily Cypress Exam # 12", () => {
         cy.contains("button", "Sign in").should("be.visible").and("be.enabled");
       });
   });
+
+  it("should fill the form using data-driven method", () => {
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    const userData = {
+      Email: "exam12.basic@test.com",
+      Password: "CypressBasic12",
+    };
+
+    cy.contains("nb-card", "Basic form")
+      .should("be.visible")
+      .within(() => {
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.contains("label", "Check me out")
+          .closest("nb-checkbox")
+          .find('input[type="checkbox"]')
+          .check({ force: true })
+          .should("be.checked");
+
+        cy.contains("button", "Submit")
+          .should("be.visible")
+          .and("be.enabled")
+          .click();
+
+        for (const [key, value] of Object.entries(userData)) {
+          cy.get(`input[placeholder="${key}"]`).should("have.value", value);
+        }
+      });
+  });
 });
