@@ -222,4 +222,52 @@ describe("Daily Cypress Exam # 12", () => {
       }
     });
   });
+
+  it("should select future date in the Datepicker", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+
+    function selectFutureDate(days) {
+      const date = new Date();
+
+      date.setDate(date.getDate() + days);
+
+      const futureDay = date.getDate();
+      const futureMonth = date.toLocaleDateString("en-US", { month: "long" });
+      const futureYear = String(date.getFullYear());
+
+      cy.get("nb-calendar-view-mode")
+        .invoke("text")
+        .then((calendarMonthAndYear) => {
+          if (
+            calendarMonthAndYear.includes(futureMonth) &&
+            calendarMonthAndYear.includes(futureYear)
+          ) {
+            cy.get(".day-cell")
+              .not(".bounding-month")
+              .contains(futureDay)
+              .click();
+          } else {
+            cy.get('[data-name="chevron-right"]').click();
+            selectFutureDate(days);
+          }
+        });
+
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").click();
+    });
+
+    const expectedDate = selectFutureDate(210);
+
+    cy.contains("nb-card", "Common Datepicker").within(() => {
+      cy.get("input").should("have.value", expectedDate);
+    });
+  });
 });
