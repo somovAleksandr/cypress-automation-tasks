@@ -150,4 +150,48 @@ describe("Daily Cypress Exam # 12", () => {
       });
     });
   });
+
+  it("should update and delete user in the Smart Table", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.window().then((win) => {
+      cy.stub(win, "confirm").as("dialog").returns(true);
+    });
+
+    const updatedData = {
+      "First Name": "Lawrence",
+      Age: "39",
+    };
+
+    cy.contains("tbody tr", "Larry")
+      .should("be.visible")
+      .within(() => {
+        cy.get(".nb-edit").click();
+      });
+
+    cy.get(".nb-checkmark")
+      .closest("tr")
+      .within(() => {
+        for (const [key, value] of Object.entries(updatedData)) {
+          cy.get(`input[placeholder="${key}"]`)
+            .clear()
+            .type(value)
+            .should("have.value", value);
+        }
+
+        cy.get(".nb-checkmark").click();
+      });
+
+    cy.contains("tbody tr", updatedData["First Name"]).within(() => {
+      cy.get("td").eq(2).should("have.text", updatedData["First Name"]);
+      cy.get("td").last().should("have.text", updatedData.Age);
+
+      cy.get(".nb-trash").click();
+
+      cy.get("@dialog").should("be.called");
+    });
+
+    cy.contains("tbody tr", updatedData["First Name"]).should("not.exist");
+  });
 });
