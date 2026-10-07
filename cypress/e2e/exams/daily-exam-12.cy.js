@@ -294,4 +294,57 @@ describe("Daily Cypress Exam # 12", () => {
 
     cy.get('[id="drop-list"]').should("contain.text", "Get groceries");
   });
+
+  it("should open and close dialog with Dismiss Dialog button", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Dialog").click();
+
+    function getIFrameBody(selector) {
+      return cy
+        .get(selector)
+        .its("0.contentDocument.body")
+        .should("not.be.empty")
+        .then(cy.wrap);
+    }
+
+    getIFrameBody('[data-cy="esc-close-iframe"]')
+      .contains("button", "Open Dialog with esc close")
+      .should("be.visible")
+      .and("be.enabled")
+      .click();
+
+    cy.contains("button", "Dismiss Dialog")
+      .should("be.visible")
+      .and("be.enabled")
+      .click();
+
+    cy.contains("button", "Dismiss Dialog").should("not.exist");
+  });
+
+  it("should open and close iframe dialog with OK button", () => {
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Dialog").click();
+
+    function getIFrameBody(selector) {
+      return cy
+        .get(selector)
+        .its("0.contentDocument.body")
+        .should("not.be.empty")
+        .then(cy.wrap);
+    }
+
+    getIFrameBody('[data-cy="esc-close-iframe"]')
+      .contains("button", "Open Dialog without esc close")
+      .should("be.visible")
+      .and("be.enabled")
+      .click();
+
+    cy.get("nb-dialog-container")
+      .contains("button", "OK")
+      .should("be.visible")
+      .and("be.enabled")
+      .click();
+
+    cy.get("nb-dialog-container").should("not.exist");
+  });
 });
