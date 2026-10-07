@@ -270,4 +270,28 @@ describe("Daily Cypress Exam # 12", () => {
       cy.get("input").should("have.value", expectedDate);
     });
   });
+
+  it("should change temperature in the Temperature Slider", () => {
+    cy.get('[tabtitle="Temperature"] circle')
+      .invoke("attr", "cx", "54.92230566874597")
+      .should("have.attr", "cx", "54.92230566874597")
+      .invoke("attr", "cy", "40.38681850639592")
+      .should("have.attr", "cy", "40.38681850639592")
+      .click();
+
+    cy.get(".value.temperature.h1").should("contain.text", "18");
+  });
+
+  it("should drag and drop element", () => {
+    cy.contains("Extra Components").click();
+    cy.contains("Drag & Drop").click();
+
+    cy.contains('[id="todo-list"] div', "Get groceries").trigger("dragstart");
+
+    cy.get('[id="drop-list"]').trigger("drop");
+
+    cy.get('[id="todo-list"]').should("not.contain.text", "Get groceries");
+
+    cy.get('[id="drop-list"]').should("contain.text", "Get groceries");
+  });
 });
