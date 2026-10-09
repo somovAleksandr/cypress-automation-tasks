@@ -198,4 +198,29 @@ describe("Exam #13", () => {
 
     cy.contains("tbody tr", updatedData["First Name"]).should("not.exist");
   });
+
+  it("should filter table by age", () => {
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    const ages = ["20", "30", "40", "200"];
+
+    cy.wrap(ages).each((age) => {
+      cy.get("thead tr")
+        .last()
+        .within(() => {
+          cy.get('input[placeholder="Age"]').clear().type(age);
+        });
+
+      cy.wait(500);
+
+      if (age === "200") {
+        cy.get("tbody tr").should("contain.text", "No data found");
+      } else {
+        cy.get("tbody tr").each(($row) => {
+          cy.wrap($row).find("td").last().should("have.text", age);
+        });
+      }
+    });
+  });
 });
