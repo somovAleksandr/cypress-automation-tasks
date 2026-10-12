@@ -223,4 +223,9 @@ describe("Exam #13", () => {
       }
     });
   });
+
+  it.only("should select future date in the Datepicker", () => {
+    cy.contains("Forms").click();
+    cy.contains("Datepicker").click();
+  });
 });
